@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 
+from app.routers import widgets
+
 app = FastAPI(title="Widget & Lead-Capture Platform")
+app.include_router(widgets.router)
 
 
 @app.get("/health")

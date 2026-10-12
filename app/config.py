@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     database_url: str
+    public_base_url: str = "http://127.0.0.1:8000"
 
 
 settings = Settings()
