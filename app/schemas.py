@@ -39,3 +39,17 @@ class WidgetOut(BaseModel):
 
 class SnippetOut(BaseModel):
     snippet: str
+
+
+class SubmissionIn(BaseModel):
+    """Public, untrusted input. Everything is validated before use."""
+
+    widget_id: str = Field(min_length=1, max_length=64)  # the widget's public id
+    data: dict[str, str]
+    idempotency_key: str | None = Field(default=None, min_length=1, max_length=100)
+    website: str = Field(default="", max_length=500)  # honeypot: humans leave it empty
+
+
+class SubmissionOut(BaseModel):
+    id: UUID
+    status: str

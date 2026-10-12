@@ -22,3 +22,20 @@ Wrong-tenant access returns 404, not 403, so a widget's existence is not reveale
 ## Embed snippet generated per widget
 
     {"snippet":"<script src=\"http://127.0.0.1:8000/static/widget.v1.js\" data-widget-id=\"pfpCt6ZOKX4P\"></script>"}
+## Public submission API: CORS, preflight, validation, size limit, honeypot, idempotency
+
+    1. Valid cross-origin POST:   HTTP/1.1 201 Created, access-control-allow-origin: *
+    2. Preflight OPTIONS:         HTTP/1.1 200 OK, access-control-allow-methods: GET, POST,
+                                  access-control-allow-headers: ... Content-Type
+    3. Replay same idempotency key: 200, same id as test 1 (no second row)
+    4. Malformed JSON:            422 {"detail":[{"type":"json_invalid",...}]}
+    5. Missing required field:    422 {"detail":[{"field":"email","msg":"This field is required"}]}
+    6. Unknown field:             422 {"detail":[{"field":"evil","msg":"Unknown field"}]}
+    7. Invalid email:             422 {"detail":[{"field":"email","msg":"Invalid email address"}]}
+    8. Unknown widget:            404 {"detail":"Widget not found"}
+    9. Oversized payload (20 KB): 413 {"detail":"Payload too large"}
+   10. Honeypot filled:           201 (fake id), nothing stored
+
+    Rows in database after all ten requests: exactly 1 (the valid one, idempotency_key key-001)
+
+Preflight returns 200 (Starlette's CORS middleware), not the 204 in the design doc; both are valid.
