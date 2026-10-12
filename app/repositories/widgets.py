@@ -55,6 +55,6 @@ def delete_widget(conn, tenant_id, widget_id) -> bool:
 def get_active_widget_by_public_id(conn, public_id: str) -> dict | None:
     """Look up an active widget for the public submission path."""
     return conn.execute(
-        "SELECT id, tenant_id, fields FROM widgets WHERE public_id = %s AND is_active",
+        "SELECT id, tenant_id, title, fields FROM widgets WHERE public_id = %s AND is_active",
         (public_id,),
     ).fetchone()

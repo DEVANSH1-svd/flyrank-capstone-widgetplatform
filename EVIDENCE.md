@@ -39,3 +39,26 @@ Wrong-tenant access returns 404, not 403, so a widget's existence is not reveale
     Rows in database after all ten requests: exactly 1 (the valid one, idempotency_key key-001)
 
 Preflight returns 200 (Starlette's CORS middleware), not the 204 in the design doc; both are valid.
+## Abuse protection, enrichment and safe side effects (pytest, 13 passed)
+
+    tests/test_submissions.py::test_valid_cross_origin_submission_is_stored PASSED
+    tests/test_submissions.py::test_preflight_is_answered PASSED
+    tests/test_submissions.py::test_repeated_idempotency_key_stores_once PASSED
+    tests/test_submissions.py::test_malformed_json_is_422 PASSED
+    tests/test_submissions.py::test_invalid_email_is_422 PASSED
+    tests/test_submissions.py::test_oversized_payload_is_413 PASSED
+    tests/test_submissions.py::test_burst_gets_429_then_service_recovers PASSED
+    tests/test_submissions.py::test_per_widget_limit PASSED
+    tests/test_submissions.py::test_provider_a_answers PASSED
+    tests/test_submissions.py::test_provider_b_answers_when_a_is_down PASSED
+    tests/test_submissions.py::test_all_providers_down_still_stores PASSED
+    tests/test_submissions.py::test_email_failure_does_not_break_submission PASSED
+    tests/test_submissions.py::test_honeypot_is_dropped_silently PASSED
+    13 passed in 3.77s
+
+Mapping to requirements:
+- Rate limiting returns 429 under a burst and the service keeps serving others: test_burst_gets_429_then_service_recovers, test_per_widget_limit
+- Spam control blocks a bot: test_honeypot_is_dropped_silently
+- Provider A down, provider B answers: test_provider_b_answers_when_a_is_down
+- All providers down, submission still stored: test_all_providers_down_still_stores
+- Failing email does not block the submission: test_email_failure_does_not_break_submission

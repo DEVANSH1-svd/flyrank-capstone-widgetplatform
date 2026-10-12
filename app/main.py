@@ -1,8 +1,12 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.middleware import BodySizeLimitMiddleware
 from app.routers import submissions, widgets
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s [%(name)s] %(message)s")
 
 app = FastAPI(title="Widget & Lead-Capture Platform")
 
@@ -14,6 +18,7 @@ app.add_middleware(
     allow_origins=["*"],
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
+    expose_headers=["Retry-After"],
     max_age=600,
 )
 
