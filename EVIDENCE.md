@@ -79,3 +79,16 @@ Mapping to requirements:
         Tenant A sees its 2 submissions and stats (total, per widget, per country); tenant B sees none.
 
     19 passed in 5.19s
+## Widget renders on a page served from a different origin (probe 1)
+
+The customer site (test-site/index.html) is served by `python -m http.server 5500`; the API runs on port 8000, so these are two different origins. The page loads the one-line embed (widget.v1.js with data-widget-id), the script fetches the widget config, renders the form, and submits. The page showed "Thank you! We received your submission."
+
+The submission then appeared in the owner dashboard, authenticated with the tenant's API key (email replaced with a placeholder here):
+
+    GET /dashboard/submissions
+    [{"id":"4f854bfe-c2be-40ce-8a5a-adbcb9a54776","widget_id":"cbe83d67-e863-4a06-95b1-39bc92b5bd9d","data":{"name":"DEVANSH","email":"visitor@example.com"},"country":null,"city":null,"geo_provider":null,"created_at":"2026-10-22T06:35:50.763692Z"}]
+
+    GET /dashboard/stats
+    {"days":30,"total":1,"per_widget":[{"widget_id":"cbe83d67-e863-4a06-95b1-39bc92b5bd9d","title":"Join the Acme newsletter","count":1}],"per_day":[{"day":"2026-10-22","count":1}],"per_country":[{"country":"Unknown","count":1}]}
+
+Country is Unknown because 127.0.0.1 cannot be geolocated; the geo fallback chain itself is proven by the pytest cases above.

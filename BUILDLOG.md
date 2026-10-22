@@ -19,6 +19,8 @@ AI (Claude) was used as a mentor and pair programmer for this capstone: design r
 - A test run took over an hour because Docker Desktop was not running and each database connection waited for the operating system timeout. Fixed by adding connect_timeout=5 to the database URL.
 - Long README text pasted into the terminal was cut off at its first code fence, and a later edit deleted half of it. Fixed by editing the file in the editor and verifying its headings.
 
+- The test page (test-site/index.html) contained the text of a closing script tag inside a JavaScript comment. The HTML parser ended the script there, so no widget rendered and half the code showed up as page text. Found from a screenshot, fixed by rewording the comment; the rule is never to write a literal closing script tag inside a script.
+
 ## Changes I made myself
 
 (Add your own entries here: what you changed, what you chose differently, and what you learned. The evaluator may ask you to explain any 2-3 lines of the code.)

@@ -16,7 +16,7 @@
       var api = params.get("api") || "http://127.0.0.1:8000";
       var slot = document.getElementById("slot");
       if (!widgetId) { slot.textContent = "Add ?widget=PUBLIC_ID to the URL."; return; }
-      // Equivalent to pasting: <script src="API/static/widget.v1.js" data-widget-id="ID"></script>
+      // Builds the same script element a customer would paste as a one-line snippet.
       var tag = document.createElement("script");
       tag.src = api + "/static/widget.v1.js";
       tag.setAttribute("data-widget-id", widgetId);
