@@ -1,0 +1,15 @@
+# Manifest read by the evaluator.
+run: docker compose up -d db && python -m scripts.migrate && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+seed: python -m scripts.seed_demo
+test: python -m pytest -q
+base_url: http://127.0.0.1:8000
+endpoints:
+  - GET /health
+  - GET /static/widget.v1.js
+  - GET /public/widgets/{public_id}/config
+  - POST /submissions
+  - GET /widgets
+  - GET /dashboard/submissions
+  - GET /dashboard/stats
+# Owner endpoints need the header X-API-Key (printed once by the seed script).
+# Probe toggles (environment variables): GEO_MODE=mock, GEO_FORCE_DOWN=a or a,b, EMAIL_FORCE_FAIL=true
