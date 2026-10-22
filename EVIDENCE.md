@@ -62,3 +62,20 @@ Mapping to requirements:
 - Provider A down, provider B answers: test_provider_b_answers_when_a_is_down
 - All providers down, submission still stored: test_all_providers_down_still_stores
 - Failing email does not block the submission: test_email_failure_does_not_break_submission
+## Widget delivery: cached config and versioned bundle (pytest, 19 passed in total)
+
+    tests/test_delivery_dashboard.py::test_script_is_served_with_long_immutable_cache PASSED
+        Cache-Control: public, max-age=31536000, immutable on /static/widget.v1.js
+    tests/test_delivery_dashboard.py::test_only_versioned_scripts_are_served PASSED
+        /static/widget.js and path-traversal attempts return 404
+    tests/test_delivery_dashboard.py::test_config_is_cached_briefly_and_supports_etag PASSED
+        Cache-Control: max-age=60, ETag, 304 on If-None-Match, CORS header present, no tenant_id leaked
+    tests/test_delivery_dashboard.py::test_config_for_unknown_widget_is_404 PASSED
+
+## Owner dashboard: authenticated, own data only, basic analytics
+
+    tests/test_delivery_dashboard.py::test_dashboard_requires_api_key PASSED
+    tests/test_delivery_dashboard.py::test_dashboard_shows_own_submissions_and_stats_only PASSED
+        Tenant A sees its 2 submissions and stats (total, per widget, per country); tenant B sees none.
+
+    19 passed in 5.19s

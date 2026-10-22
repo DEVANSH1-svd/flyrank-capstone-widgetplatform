@@ -61,3 +61,35 @@ def stored_rows():
                 (public_id,),
             ).fetchall()
     return _rows
+
+@pytest.fixture
+def tenant_factory():
+    """Create tenants (each with one widget) and delete them all afterwards."""
+    created = []
+
+    def _make(name: str = "pytest tenant") -> dict:
+        api_key = secrets.token_urlsafe(32)
+        with psycopg.connect(settings.database_url, row_factory=dict_row) as conn:
+            tenant = tenants.create_tenant(conn, name, hash_api_key(api_key))
+            widget = widgets.create_widget(
+                conn,
+                tenant["id"],
+                secrets.token_urlsafe(9),
+                {
+                    "type": "signup_form",
+                    "title": f"{name} widget",
+                    "description": None,
+                    "fields": [{"name": "email", "label": "Email", "type": "email", "required": True}],
+                    "button_text": "Send",
+                    "is_active": True,
+                },
+            )
+            conn.commit()
+        created.append(tenant["id"])
+        return {"api_key": api_key, "public_id": widget["public_id"], "widget_id": str(widget["id"])}
+
+    yield _make
+    with psycopg.connect(settings.database_url) as conn:
+        for tenant_id in created:
+            conn.execute("DELETE FROM tenants WHERE id = %s", (tenant_id,))
+        conn.commit()

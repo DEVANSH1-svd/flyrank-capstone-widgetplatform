@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.middleware import BodySizeLimitMiddleware
-from app.routers import submissions, widgets
+from app.routers import dashboard, public, submissions, widgets
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s [%(name)s] %(message)s")
 
@@ -23,7 +23,9 @@ app.add_middleware(
 )
 
 app.include_router(widgets.router)
+app.include_router(public.router)
 app.include_router(submissions.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/health")

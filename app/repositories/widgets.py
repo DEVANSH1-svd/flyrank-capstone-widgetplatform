@@ -58,3 +58,12 @@ def get_active_widget_by_public_id(conn, public_id: str) -> dict | None:
         "SELECT id, tenant_id, title, fields FROM widgets WHERE public_id = %s AND is_active",
         (public_id,),
     ).fetchone()
+
+
+def get_public_config(conn, public_id: str) -> dict | None:
+    """Fields safe to show publicly (no tenant or internal ids)."""
+    return conn.execute(
+        "SELECT public_id, type, title, description, fields, button_text, "
+        "config_version AS version FROM widgets WHERE public_id = %s AND is_active",
+        (public_id,),
+    ).fetchone()
